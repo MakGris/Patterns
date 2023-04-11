@@ -116,6 +116,26 @@ class Deposite: Command {
     }
 }
 
+class WithDraw: Command {
+    
+    private var account: BankAccount
+    private var amount: Int
+    var isComplete = false
+    
+    init(account: BankAccount, amount: Int) {
+        self.account = account
+        self.amount = amount
+    }
+    func execute() {
+        if account.balance >= amount {
+            account.balance -= amount
+            isComplete = true
+        } else {
+            print("Not enough money")
+        }
+    }
+}
+
 class TransactionManager {
     
     static let shared = TransactionManager()
@@ -137,3 +157,12 @@ class TransactionManager {
         transactions.filter{$0.isComplete == false}.forEach{$0.execute()}
     }
 }
+
+let account = BankAccount(name: "Maksim", balance: 2000)
+
+let transactionManager = TransactionManager.shared
+
+transactionManager.addTransaction(command: Deposite(account: account, amount: 500))
+transactionManager.pendingTransactions
+transactionManager.processingTransactions()
+print(account.balance)
